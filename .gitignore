@@ -1,7 +1,41 @@
 # GO CLI Project
 
+# Environment variables
 .env
 .env.local
 .env.*.local
 !.env.example
 !.env.test.example
+
+# Build artifacts
+bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Go
+vendor/
+go.sum
+*.out
+
+# Credentials
+.credentials/
+token.json
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.idea/
