@@ -333,9 +333,33 @@ func (te *TransactionExtractor) extractAmount(text string) float64 {
 	return 0
 }
 
+// cleanHTMLTags removes HTML tags and common HTML entities from text
+func (te *TransactionExtractor) cleanHTMLTags(text string) string {
+	// Remove HTML tags
+	reHtmlTag := regexp.MustCompile("<[^>]*>")
+	text = reHtmlTag.ReplaceAllString(text, " ")
+
+	// Remove common HTML entities
+	text = strings.ReplaceAll(text, "&nbsp;", " ")
+	text = strings.ReplaceAll(text, "&amp;", "&")
+	text = strings.ReplaceAll(text, "&lt;", "<")
+	text = strings.ReplaceAll(text, "&gt;", ">")
+	text = strings.ReplaceAll(text, "&quot;", "\"")
+	text = strings.ReplaceAll(text, "&#39;", "'")
+	text = strings.ReplaceAll(text, "&apos;", "'")
+
+	// Collapse multiple spaces
+	text = regexp.MustCompile(`\s+`).ReplaceAllString(text, " ")
+	text = strings.TrimSpace(text)
+
+	return text
+}
+
 // extractTransactionDate tries to extract the transaction date from email body and subject
 func (te *TransactionExtractor) extractTransactionDate(body, subject string) time.Time {
-	fullText := body + " " + subject
+	// Clean HTML from body
+	cleanBody := te.cleanHTMLTags(body)
+	fullText := cleanBody + " " + subject
 	fullText = strings.ToLower(fullText)
 
 	// Try exact date patterns first (YYYY-MM-DD, MM/DD/YYYY, etc.)
@@ -343,19 +367,35 @@ func (te *TransactionExtractor) extractTransactionDate(body, subject string) tim
 		pattern string
 		format  string
 	}{
-		{`(\d{4})-(\d{2})-(\d{2})`, "2006-01-02"},
-		{`(\d{1,2})/(\d{1,2})/(\d{4})`, "01/02/2006"},
-		{`(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{1,2}),?\s+(\d{4})`, "January 02, 2006"},
-		{`(\d{1,2})\s+(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{4})`, "02 January 2006"},
+		// Exact patterns with word boundaries
+		{`\b(\d{4})-(\d{2})-(\d{2})\b`, "2006-01-02"},
+		{`\b(\d{1,2})/(\d{1,2})/(\d{4})\b`, "01/02/2006"},
+		// Month Day, Year format (Dec 14, 2025)
+		{`\b(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{1,2}),?\s+(\d{4})\b`, "January 02 2006"},
+		// Day Month Year format (14 Dec 2025)
+		{`\b(\d{1,2})\s+(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{4})\b`, "02 January 2006"},
 	}
 
 	for _, dp := range datePatterns {
 		re := regexp.MustCompile("(?i)" + dp.pattern)
 		matches := re.FindAllStringSubmatch(fullText, -1)
 		if len(matches) > 0 {
-			// Get the last match (usually most relevant)
+			// Get the last match (usually most relevant - actual transaction date, not email sent date)
 			lastMatch := matches[len(matches)-1]
-			dateStr := strings.Join(lastMatch[1:], " ")
+
+			// Extract and reconstruct the date string
+			var dateStr string
+			if len(lastMatch) >= 4 && strings.Contains(lastMatch[0], ",") {
+				// Month Day, Year format (Dec 14, 2025)
+				dateStr = strings.Title(lastMatch[1]) + " " + lastMatch[2] + " " + lastMatch[3]
+			} else if len(lastMatch) >= 4 {
+				// Day Month Year format (14 Dec 2025)
+				dateStr = lastMatch[1] + " " + strings.Title(lastMatch[2]) + " " + lastMatch[3]
+			} else if len(lastMatch) >= 3 {
+				dateStr = lastMatch[1] + "-" + lastMatch[2] + "-" + lastMatch[3]
+			} else {
+				continue
+			}
 
 			// Try to parse
 			if t, err := time.Parse(dp.format, dateStr); err == nil {
@@ -364,39 +404,18 @@ func (te *TransactionExtractor) extractTransactionDate(body, subject string) tim
 		}
 	}
 
-	// Try relative date patterns
+	// Try month day pattern without year (use current year)
 	today := time.Now()
-
-	// "dec 16", "december 16", etc.
-	monthDayPattern := regexp.MustCompile(`(?i)(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{1,2})`)
+	monthDayPattern := regexp.MustCompile(`(?i)\b(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{1,2})\b`)
 	if matches := monthDayPattern.FindAllStringSubmatch(fullText, -1); len(matches) > 0 {
 		lastMatch := matches[len(matches)-1]
-		monthStr := lastMatch[1]
+		monthStr := strings.Title(lastMatch[1])
 		dayStr := lastMatch[2]
 
 		// Parse with current year
 		dateStr := monthStr + " " + dayStr + " " + fmt.Sprintf("%d", today.Year())
 		if t, err := time.Parse("January 02 2006", dateStr); err == nil {
 			return t
-		}
-	}
-
-	// Try relative day references
-	relativeDayPatterns := map[string]int{
-		"today":     0,
-		"yesterday": -1,
-		"monday":    -1, // Approximate
-		"tuesday":   -1,
-		"wednesday": -1,
-		"thursday":  -1,
-		"friday":    -1,
-		"saturday":  -1,
-		"sunday":    -1,
-	}
-
-	for dayName, offset := range relativeDayPatterns {
-		if strings.Contains(fullText, dayName) && offset == 0 {
-			return today
 		}
 	}
 
