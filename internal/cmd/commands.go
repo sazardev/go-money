@@ -76,6 +76,7 @@ var calculateCmd = &cobra.Command{
 	Short: "Calculate and summarize expenses",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		debug, _ := cmd.Flags().GetBool("debug")
 
 		// Step 1: Load existing token
 		fmt.Println("📊 Loading your authentication token...")
@@ -138,10 +139,38 @@ var calculateCmd = &cobra.Command{
 		transactions := txExtractor.ExtractTransactions(allMessages)
 		fmt.Printf("✅ Extracted %d transactions!\n", len(transactions))
 
+		// Debug mode: show unmatched emails
+		if debug && len(transactions) == 0 && len(allMessages) > 0 {
+			fmt.Println("\n🔍 DEBUG: Analyzing unmatched emails...")
+			fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+			// Show first 10 emails for debugging
+			limit := 10
+			if len(allMessages) < limit {
+				limit = len(allMessages)
+			}
+
+			for i := 0; i < limit; i++ {
+				msg := allMessages[i]
+				fmt.Printf("\n📧 Email %d:\n", i+1)
+				fmt.Printf("   From: %s\n", msg.From)
+				fmt.Printf("   Subject: %s\n", msg.Subject)
+				fmt.Printf("   Date: %s\n", msg.Date)
+				if debug {
+					fmt.Printf("   Body (first 200 chars): %s\n", truncateString(msg.Body, 200))
+				}
+			}
+
+			fmt.Println("\n💡 Tip: Check the email domains and keywords. You may need to update tracker-mails.json")
+		}
+
 		// Step 5: Display results
 		if len(transactions) == 0 {
 			fmt.Println("\n⚠️  No transactions could be extracted from the emails.")
 			fmt.Println("💡 Tip: Some emails might not match the configured services.")
+			if !debug {
+				fmt.Println("💡 Try: gm calculate --debug  (to see unmatched emails)")
+			}
 			return nil
 		}
 
@@ -277,6 +306,15 @@ var graphCmd = &cobra.Command{
 	},
 }
 
+// Helper function to truncate strings
+func truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen] + "..."
+}
+
 func init() {
 	authCmd.AddCommand(loginCmd)
+	calculateCmd.Flags().BoolP("debug", "d", false, "Show debug information about unmatched emails")
 }

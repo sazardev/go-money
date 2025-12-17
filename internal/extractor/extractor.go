@@ -122,21 +122,23 @@ func (te *TransactionExtractor) extractTransactionFromMessage(msg *models.Messag
 // matchService finds the matching service for a message
 func (te *TransactionExtractor) matchService(msg *models.Message) *Service {
 	sender := strings.ToLower(msg.From)
+	body := strings.ToLower(msg.Body + " " + msg.Subject)
 
-	// Check email domains
+	// Priority 1: Check email domains (most reliable)
 	for _, service := range te.tracker.Services {
 		for _, domain := range service.EmailDomains {
 			if strings.Contains(sender, strings.ToLower(domain)) {
+				// Found match by email domain
 				return &service
 			}
 		}
 	}
 
-	// Check keywords
-	body := strings.ToLower(msg.Body + msg.Subject)
+	// Priority 2: Check keywords
 	for _, service := range te.tracker.Services {
 		for _, keyword := range service.Keywords {
 			if strings.Contains(body, strings.ToLower(keyword)) {
+				// Found match by keyword
 				return &service
 			}
 		}

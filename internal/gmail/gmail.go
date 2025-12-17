@@ -2,6 +2,7 @@ package gmail
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"strings"
@@ -126,10 +127,27 @@ func parseDate(dateStr string) time.Time {
 	return time.Now()
 }
 
-// decodeBase64 decodes base64 encoded data
+// decodeBase64 decodes base64 encoded data (URL-safe base64 from Gmail API)
 func decodeBase64(encoded string) string {
-	// TODO: Implement proper base64 decoding
-	return encoded
+	// Gmail API uses URL-safe base64 encoding (- and _ instead of + and /)
+	// First normalize the encoded string
+	encoded = strings.ReplaceAll(encoded, "-", "+")
+	encoded = strings.ReplaceAll(encoded, "_", "/")
+
+	// Add padding if necessary
+	remainder := len(encoded) % 4
+	if remainder != 0 {
+		encoded += strings.Repeat("=", 4-remainder)
+	}
+
+	// Decode from base64
+	decoded, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		log.Printf("Failed to decode base64: %v", err)
+		return encoded
+	}
+
+	return string(decoded)
 }
 
 // GetMessagesFromSender retrieves messages from a specific sender
