@@ -1,0 +1,1466 @@
+{
+    "services": [
+        {
+            "id": "uber",
+            "name": "Uber",
+            "category": "Transportation",
+            "emailDomains": [
+                "noreply@uber.com",
+                "uber@uber.com"
+            ],
+            "transactionTypes": [
+                "trip_charge",
+                "ride_receipt"
+            ],
+            "keywords": [
+                "trip",
+                "fare",
+                "ride",
+                "uber receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "lyft",
+            "name": "Lyft",
+            "category": "Transportation",
+            "emailDomains": [
+                "receipts@lyft.com",
+                "noreply@lyft.com"
+            ],
+            "transactionTypes": [
+                "ride_receipt"
+            ],
+            "keywords": [
+                "lyft",
+                "receipt",
+                "ride",
+                "fare"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "didi",
+            "name": "Didi",
+            "category": "Transportation",
+            "emailDomains": [
+                "noreply@didichuxing.com",
+                "support@didi.com"
+            ],
+            "transactionTypes": [
+                "ride_receipt"
+            ],
+            "keywords": [
+                "didi",
+                "ride",
+                "fare",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "CNY",
+                "fields": [
+                    "subtotal",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "grab",
+            "name": "Grab",
+            "category": "Transportation",
+            "emailDomains": [
+                "noreply@grab.com",
+                "support@grab.com"
+            ],
+            "transactionTypes": [
+                "ride_receipt",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "grab",
+                "receipt",
+                "fare",
+                "booking"
+            ],
+            "pricePattern": {
+                "currency": "SGD",
+                "fields": [
+                    "subtotal",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "indriver",
+            "name": "InDriver",
+            "category": "Transportation",
+            "emailDomains": [
+                "noreply@indriver.com",
+                "support@indriver.com"
+            ],
+            "transactionTypes": [
+                "ride_receipt"
+            ],
+            "keywords": [
+                "indriver",
+                "ride",
+                "receipt",
+                "fare"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "ubereats",
+            "name": "Uber Eats",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "noreply@uber.com",
+                "ubereats@uber.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "uber eats",
+                "order",
+                "delivery",
+                "food receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "doordash",
+            "name": "DoorDash",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "doordash@doordash.com",
+                "noreply@doordash.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "doordash",
+                "order",
+                "receipt",
+                "delivery"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "grubhub",
+            "name": "Grubhub",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "noreply@grubhub.com",
+                "grubhub@grubhub.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "grubhub",
+                "order",
+                "receipt",
+                "delivery"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "postmates",
+            "name": "Postmates",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "postmates@postmates.com",
+                "noreply@postmates.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "postmates",
+                "order",
+                "receipt",
+                "delivery"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "deliveroo",
+            "name": "Deliveroo",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "noreply@deliveroo.co.uk",
+                "support@deliveroo.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "deliveroo",
+                "order",
+                "receipt",
+                "delivery"
+            ],
+            "pricePattern": {
+                "currency": "GBP",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "rappi",
+            "name": "Rappi",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "noreply@rappi.com",
+                "support@rappi.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "rappi",
+                "order",
+                "receipt",
+                "delivery"
+            ],
+            "pricePattern": {
+                "currency": "COP",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "didifood",
+            "name": "Didi Food",
+            "category": "Food Delivery",
+            "emailDomains": [
+                "noreply@didi.com",
+                "food@didichuxing.com"
+            ],
+            "transactionTypes": [
+                "food_order",
+                "delivery_receipt"
+            ],
+            "keywords": [
+                "didi food",
+                "order",
+                "receipt",
+                "delivery"
+            ],
+            "pricePattern": {
+                "currency": "CNY",
+                "fields": [
+                    "subtotal",
+                    "delivery_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "amazon",
+            "name": "Amazon",
+            "category": "E-commerce",
+            "emailDomains": [
+                "order-update@amazon.com",
+                "shipment-tracking@amazon.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "amazon",
+                "order",
+                "purchase",
+                "shipment"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "item_price",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "ebay",
+            "name": "eBay",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@ebay.com",
+                "ebay@ebay.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "auction_won"
+            ],
+            "keywords": [
+                "ebay",
+                "order",
+                "purchase",
+                "auction"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "item_price",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "aliexpress",
+            "name": "AliExpress",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@aliexpress.com",
+                "aliexpress@aliexpress.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "aliexpress",
+                "order",
+                "purchase",
+                "shipment"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "item_price",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "etsy",
+            "name": "Etsy",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@etsy.com",
+                "orders@etsy.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "etsy",
+                "order",
+                "purchase",
+                "shipment"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "item_price",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "walmart",
+            "name": "Walmart",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@walmart.com",
+                "orders@walmart.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "walmart",
+                "order",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "samsclub",
+            "name": "Sam's Club",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@samsclub.com",
+                "orders@samsclub.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "receipt"
+            ],
+            "keywords": [
+                "sam's club",
+                "order",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "playstore",
+            "name": "Google Play Store",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@google.com",
+                "play-noreply@google.com"
+            ],
+            "transactionTypes": [
+                "app_purchase",
+                "in_app_purchase"
+            ],
+            "keywords": [
+                "google play",
+                "purchase receipt",
+                "app"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "applestore",
+            "name": "Apple Store",
+            "category": "E-commerce",
+            "emailDomains": [
+                "noreply@apple.com",
+                "receipts@apple.com"
+            ],
+            "transactionTypes": [
+                "app_purchase",
+                "in_app_purchase",
+                "itunes_purchase"
+            ],
+            "keywords": [
+                "apple",
+                "receipt",
+                "purchase",
+                "itunes"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "netflix",
+            "name": "Netflix",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@netflix.com",
+                "billing@netflix.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "netflix",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "spotify",
+            "name": "Spotify",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@spotify.com",
+                "billing@spotify.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "spotify",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "disneyplus",
+            "name": "Disney+",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@disneyplus.com",
+                "billing@disneyplus.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "disney+",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "hulu",
+            "name": "Hulu",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@hulu.com",
+                "billing@hulu.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "hulu",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "applemusic",
+            "name": "Apple Music",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@apple.com",
+                "billing@apple.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "apple music",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "hbomax",
+            "name": "HBO Max",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@hbomax.com",
+                "billing@hbomax.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "hbo max",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "amazonprime",
+            "name": "Amazon Prime",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@amazon.com",
+                "billing@amazon.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "amazon prime",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "youtubenotifications",
+            "name": "YouTube Premium",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@google.com",
+                "billing@google.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "youtube premium",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "youtubemusic",
+            "name": "YouTube Music",
+            "category": "Subscription",
+            "emailDomains": [
+                "noreply@google.com",
+                "billing@google.com"
+            ],
+            "transactionTypes": [
+                "subscription_charge",
+                "monthly_billing"
+            ],
+            "keywords": [
+                "youtube music",
+                "subscription",
+                "billing",
+                "charge"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "plan_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "airbnb",
+            "name": "Airbnb",
+            "category": "Travel & Accommodation",
+            "emailDomains": [
+                "noreply@airbnb.com",
+                "reservations@airbnb.com"
+            ],
+            "transactionTypes": [
+                "reservation_confirmation",
+                "booking_receipt"
+            ],
+            "keywords": [
+                "airbnb",
+                "reservation",
+                "booking",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "nightly_rate",
+                    "nights",
+                    "cleaning_fee",
+                    "service_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "booking",
+            "name": "Booking.com",
+            "category": "Travel & Accommodation",
+            "emailDomains": [
+                "noreply@booking.com",
+                "reservations@booking.com"
+            ],
+            "transactionTypes": [
+                "reservation_confirmation",
+                "booking_receipt"
+            ],
+            "keywords": [
+                "booking",
+                "reservation",
+                "hotel",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "room_price",
+                    "nights",
+                    "service_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "expedia",
+            "name": "Expedia",
+            "category": "Travel & Accommodation",
+            "emailDomains": [
+                "noreply@expedia.com",
+                "reservations@expedia.com"
+            ],
+            "transactionTypes": [
+                "reservation_confirmation",
+                "booking_receipt"
+            ],
+            "keywords": [
+                "expedia",
+                "reservation",
+                "booking",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "hotel_price",
+                    "nights",
+                    "service_fee",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "paypal",
+            "name": "PayPal",
+            "category": "Financial Services",
+            "emailDomains": [
+                "service@paypal.com",
+                "noreply@paypal.com"
+            ],
+            "transactionTypes": [
+                "payment_sent",
+                "payment_received",
+                "transfer"
+            ],
+            "keywords": [
+                "paypal",
+                "transaction",
+                "payment",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "amount",
+                    "fee",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "venmo",
+            "name": "Venmo",
+            "category": "Financial Services",
+            "emailDomains": [
+                "hello@venmo.com",
+                "noreply@venmo.com"
+            ],
+            "transactionTypes": [
+                "payment_sent",
+                "payment_received"
+            ],
+            "keywords": [
+                "venmo",
+                "payment",
+                "transaction",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "cashapp",
+            "name": "Cash App",
+            "category": "Financial Services",
+            "emailDomains": [
+                "noreply@square.com",
+                "alerts@cashapp.com"
+            ],
+            "transactionTypes": [
+                "payment_sent",
+                "payment_received",
+                "transfer"
+            ],
+            "keywords": [
+                "cash app",
+                "payment",
+                "transaction",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "mercadopago",
+            "name": "Mercado Pago",
+            "category": "Financial Services",
+            "emailDomains": [
+                "no-responder@mercadopago.com",
+                "notificaciones@mercadopago.com"
+            ],
+            "transactionTypes": [
+                "payment_sent",
+                "payment_received",
+                "transfer"
+            ],
+            "keywords": [
+                "mercado pago",
+                "pago",
+                "transacción",
+                "recibo"
+            ],
+            "pricePattern": {
+                "currency": "ARS",
+                "fields": [
+                    "amount",
+                    "fee",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "nubank",
+            "name": "Nubank",
+            "category": "Financial Services",
+            "emailDomains": [
+                "noreply@nubank.com.br",
+                "notificacoes@nubank.com.br"
+            ],
+            "transactionTypes": [
+                "payment_sent",
+                "payment_received",
+                "transfer"
+            ],
+            "keywords": [
+                "nubank",
+                "transação",
+                "pagamento",
+                "recibo"
+            ],
+            "pricePattern": {
+                "currency": "BRL",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "banorte",
+            "name": "Banorte",
+            "category": "Financial Services",
+            "emailDomains": [
+                "noreply@banorte.com",
+                "alerts@banorte.com"
+            ],
+            "transactionTypes": [
+                "transfer",
+                "payment",
+                "deposit"
+            ],
+            "keywords": [
+                "banorte",
+                "transferencia",
+                "pago",
+                "movimiento"
+            ],
+            "pricePattern": {
+                "currency": "MXN",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "banamex",
+            "name": "Banamex",
+            "category": "Financial Services",
+            "emailDomains": [
+                "noreply@banamex.com",
+                "alerts@banamex.com"
+            ],
+            "transactionTypes": [
+                "transfer",
+                "payment",
+                "deposit"
+            ],
+            "keywords": [
+                "banamex",
+                "transferencia",
+                "pago",
+                "movimiento"
+            ],
+            "pricePattern": {
+                "currency": "MXN",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "bbva",
+            "name": "BBVA",
+            "category": "Financial Services",
+            "emailDomains": [
+                "noreply@bbva.com",
+                "alerts@bbva.com"
+            ],
+            "transactionTypes": [
+                "transfer",
+                "payment",
+                "deposit"
+            ],
+            "keywords": [
+                "bbva",
+                "transferencia",
+                "pago",
+                "movimiento"
+            ],
+            "pricePattern": {
+                "currency": "MXN",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "hsbc",
+            "name": "HSBC",
+            "category": "Financial Services",
+            "emailDomains": [
+                "noreply@hsbc.com",
+                "alerts@hsbc.com"
+            ],
+            "transactionTypes": [
+                "transfer",
+                "payment",
+                "deposit"
+            ],
+            "keywords": [
+                "hsbc",
+                "transferencia",
+                "pago",
+                "movimiento"
+            ],
+            "pricePattern": {
+                "currency": "MXN",
+                "fields": [
+                    "amount"
+                ]
+            }
+        },
+        {
+            "id": "fandango",
+            "name": "Fandango",
+            "category": "Cinema",
+            "emailDomains": [
+                "noreply@fandango.com",
+                "orders@fandango.com"
+            ],
+            "transactionTypes": [
+                "ticket_purchase",
+                "movie_receipt"
+            ],
+            "keywords": [
+                "fandango",
+                "ticket",
+                "movie",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "ticket_price",
+                    "quantity",
+                    "fees",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "amc",
+            "name": "AMC Theatres",
+            "category": "Cinema",
+            "emailDomains": [
+                "noreply@amctheatres.com",
+                "orders@amctheatres.com"
+            ],
+            "transactionTypes": [
+                "ticket_purchase",
+                "movie_receipt"
+            ],
+            "keywords": [
+                "amc",
+                "ticket",
+                "movie",
+                "theatre"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "ticket_price",
+                    "quantity",
+                    "fees",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "cinemex",
+            "name": "Cinemex",
+            "category": "Cinema",
+            "emailDomains": [
+                "noreply@cinemex.com",
+                "ventas@cinemex.com"
+            ],
+            "transactionTypes": [
+                "ticket_purchase",
+                "movie_receipt"
+            ],
+            "keywords": [
+                "cinemex",
+                "entrada",
+                "cine",
+                "recibo"
+            ],
+            "pricePattern": {
+                "currency": "MXN",
+                "fields": [
+                    "ticket_price",
+                    "quantity",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "cinepolis",
+            "name": "Cinepolis",
+            "category": "Cinema",
+            "emailDomains": [
+                "noreply@cinepolis.com",
+                "ventas@cinepolis.com"
+            ],
+            "transactionTypes": [
+                "ticket_purchase",
+                "movie_receipt"
+            ],
+            "keywords": [
+                "cinepolis",
+                "entrada",
+                "cine",
+                "recibo"
+            ],
+            "pricePattern": {
+                "currency": "MXN",
+                "fields": [
+                    "ticket_price",
+                    "quantity",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "steam",
+            "name": "Steam",
+            "category": "Video Game Platforms",
+            "emailDomains": [
+                "noreply@steampowered.com",
+                "support@steampowered.com"
+            ],
+            "transactionTypes": [
+                "game_purchase",
+                "in_game_purchase"
+            ],
+            "keywords": [
+                "steam",
+                "game",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "game_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "epicgames",
+            "name": "Epic Games Store",
+            "category": "Video Game Platforms",
+            "emailDomains": [
+                "noreply@epicgames.com",
+                "support@epicgames.com"
+            ],
+            "transactionTypes": [
+                "game_purchase",
+                "in_game_purchase"
+            ],
+            "keywords": [
+                "epic games",
+                "game",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "game_price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "xbox",
+            "name": "Xbox",
+            "category": "Video Game Platforms",
+            "emailDomains": [
+                "noreply@xbox.com",
+                "support@xbox.com"
+            ],
+            "transactionTypes": [
+                "game_purchase",
+                "subscription_charge"
+            ],
+            "keywords": [
+                "xbox",
+                "game",
+                "purchase",
+                "gamepass"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "psn",
+            "name": "PlayStation Store",
+            "category": "Video Game Platforms",
+            "emailDomains": [
+                "noreply@sony.com",
+                "psn@sony.com"
+            ],
+            "transactionTypes": [
+                "game_purchase",
+                "subscription_charge"
+            ],
+            "keywords": [
+                "playstation",
+                "psn",
+                "game",
+                "purchase"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "price",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "zara",
+            "name": "Zara",
+            "category": "Clothing & Retail",
+            "emailDomains": [
+                "noreply@zara.com",
+                "orders@zara.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "zara",
+                "order",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "hm",
+            "name": "H&M",
+            "category": "Clothing & Retail",
+            "emailDomains": [
+                "noreply@hm.com",
+                "orders@hm.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "h&m",
+                "order",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "nike",
+            "name": "Nike",
+            "category": "Clothing & Retail",
+            "emailDomains": [
+                "noreply@nike.com",
+                "orders@nike.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "nike",
+                "order",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        },
+        {
+            "id": "adidas",
+            "name": "Adidas",
+            "category": "Clothing & Retail",
+            "emailDomains": [
+                "noreply@adidas.com",
+                "orders@adidas.com"
+            ],
+            "transactionTypes": [
+                "purchase_order",
+                "shipment_confirmation"
+            ],
+            "keywords": [
+                "adidas",
+                "order",
+                "purchase",
+                "receipt"
+            ],
+            "pricePattern": {
+                "currency": "USD",
+                "fields": [
+                    "subtotal",
+                    "shipping",
+                    "tax",
+                    "total"
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "lastUpdated": "2025-12-16",
+        "totalServices": 51,
+        "categories": [
+            "Transportation",
+            "Food Delivery",
+            "E-commerce",
+            "Subscription",
+            "Travel & Accommodation",
+            "Financial Services",
+            "Cinema",
+            "Video Game Platforms",
+            "Clothing & Retail"
+        ]
+    }
+}
