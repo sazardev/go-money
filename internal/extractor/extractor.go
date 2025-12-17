@@ -2,6 +2,7 @@ package extractor
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"regexp"
@@ -102,6 +103,12 @@ func (te *TransactionExtractor) extractTransactionFromMessage(msg *models.Messag
 		return nil
 	}
 
+	// Try to extract transaction date from email body
+	txDate := te.extractTransactionDate(msg.Body, msg.Subject)
+	if txDate.IsZero() {
+		txDate = msg.Date
+	}
+
 	// Create transaction
 	txn := &models.Transaction{
 		ID:             msg.ID,
@@ -111,7 +118,7 @@ func (te *TransactionExtractor) extractTransactionFromMessage(msg *models.Messag
 		Amount:         amount,
 		Currency:       currency,
 		CurrencySymbol: currencySymbol,
-		Date:           msg.Date,
+		Date:           txDate,
 		Description:    msg.Subject,
 		Email:          msg.From,
 		Subject:        msg.Subject,
@@ -324,6 +331,76 @@ func (te *TransactionExtractor) extractAmount(text string) float64 {
 	}
 
 	return 0
+}
+
+// extractTransactionDate tries to extract the transaction date from email body and subject
+func (te *TransactionExtractor) extractTransactionDate(body, subject string) time.Time {
+	fullText := body + " " + subject
+	fullText = strings.ToLower(fullText)
+
+	// Try exact date patterns first (YYYY-MM-DD, MM/DD/YYYY, etc.)
+	datePatterns := []struct {
+		pattern string
+		format  string
+	}{
+		{`(\d{4})-(\d{2})-(\d{2})`, "2006-01-02"},
+		{`(\d{1,2})/(\d{1,2})/(\d{4})`, "01/02/2006"},
+		{`(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{1,2}),?\s+(\d{4})`, "January 02, 2006"},
+		{`(\d{1,2})\s+(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{4})`, "02 January 2006"},
+	}
+
+	for _, dp := range datePatterns {
+		re := regexp.MustCompile("(?i)" + dp.pattern)
+		matches := re.FindAllStringSubmatch(fullText, -1)
+		if len(matches) > 0 {
+			// Get the last match (usually most relevant)
+			lastMatch := matches[len(matches)-1]
+			dateStr := strings.Join(lastMatch[1:], " ")
+
+			// Try to parse
+			if t, err := time.Parse(dp.format, dateStr); err == nil {
+				return t
+			}
+		}
+	}
+
+	// Try relative date patterns
+	today := time.Now()
+
+	// "dec 16", "december 16", etc.
+	monthDayPattern := regexp.MustCompile(`(?i)(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\s+(\d{1,2})`)
+	if matches := monthDayPattern.FindAllStringSubmatch(fullText, -1); len(matches) > 0 {
+		lastMatch := matches[len(matches)-1]
+		monthStr := lastMatch[1]
+		dayStr := lastMatch[2]
+
+		// Parse with current year
+		dateStr := monthStr + " " + dayStr + " " + fmt.Sprintf("%d", today.Year())
+		if t, err := time.Parse("January 02 2006", dateStr); err == nil {
+			return t
+		}
+	}
+
+	// Try relative day references
+	relativeDayPatterns := map[string]int{
+		"today":     0,
+		"yesterday": -1,
+		"monday":    -1, // Approximate
+		"tuesday":   -1,
+		"wednesday": -1,
+		"thursday":  -1,
+		"friday":    -1,
+		"saturday":  -1,
+		"sunday":    -1,
+	}
+
+	for dayName, offset := range relativeDayPatterns {
+		if strings.Contains(fullText, dayName) && offset == 0 {
+			return today
+		}
+	}
+
+	return time.Time{}
 }
 
 // GetServiceByID returns a service by its ID
