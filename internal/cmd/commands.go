@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/sazardev/go-money/internal/auth"
@@ -31,6 +32,16 @@ func init() {
 	rootCmd.AddCommand(authCmd)
 	rootCmd.AddCommand(calculateCmd)
 	rootCmd.AddCommand(graphCmd)
+
+	// Add subcommands
+	authCmd.AddCommand(loginCmd)
+
+	// Add flags to calculateCmd
+	calculateCmd.Flags().BoolP("debug", "d", false, "Enable debug mode")
+	calculateCmd.Flags().StringP("from", "f", "", "Start date (YYYY-MM-DD format)")
+	calculateCmd.Flags().StringP("to", "t", "", "End date (YYYY-MM-DD format)")
+	calculateCmd.Flags().StringP("month", "m", "", "Specific month (YYYY-MM format)")
+	calculateCmd.Flags().StringP("currency", "c", "", "Filter by currency (USD, MXN, EUR, GBP, JPY, CAD)")
 }
 
 var versionCmd = &cobra.Command{
@@ -77,6 +88,45 @@ var calculateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		debug, _ := cmd.Flags().GetBool("debug")
+		fromStr, _ := cmd.Flags().GetString("from")
+		toStr, _ := cmd.Flags().GetString("to")
+		month, _ := cmd.Flags().GetString("month")
+		currency, _ := cmd.Flags().GetString("currency")
+
+		// Parse date filters
+		var fromDate, toDate time.Time
+		var err error
+
+		if fromStr != "" {
+			fromDate, err = parseDate(fromStr)
+			if err != nil {
+				fmt.Printf("❌ Invalid --from date: %v (use YYYY-MM-DD)\n", err)
+				return nil
+			}
+		}
+
+		if toStr != "" {
+			toDate, err = parseDate(toStr)
+			if err != nil {
+				fmt.Printf("❌ Invalid --to date: %v (use YYYY-MM-DD)\n", err)
+				return nil
+			}
+		}
+
+		// Handle month filter (YYYY-MM format)
+		if month != "" {
+			parts := strings.Split(month, "-")
+			if len(parts) == 2 {
+				year := parts[0]
+				monthNum := parts[1]
+				dateStr := year + "-" + monthNum + "-01"
+				if monthDate, err := parseDate(dateStr); err == nil {
+					fromDate = monthDate
+					// Set toDate to last day of month
+					toDate = monthDate.AddDate(0, 1, -1).Add(24*time.Hour - time.Nanosecond)
+				}
+			}
+		}
 
 		// Step 1: Load existing token
 		fmt.Println("📊 Loading your authentication token...")
@@ -137,13 +187,44 @@ var calculateCmd = &cobra.Command{
 		}
 
 		transactions := txExtractor.ExtractTransactions(allMessages)
-		fmt.Printf("✅ Extracted %d transactions!\n", len(transactions))
 
-		// Debug mode: show unmatched emails
-		if debug && len(transactions) == 0 && len(allMessages) > 0 {
-			fmt.Println("\n🔍 DEBUG: Analyzing unmatched emails...")
-			fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+		// Filter by date range if provided
+		if !fromDate.IsZero() || !toDate.IsZero() {
+			var filtered []*models.Transaction
+			for _, tx := range transactions {
+				txDate := tx.Date
+				if !fromDate.IsZero() && txDate.Before(fromDate) {
+					continue
+				}
+				if !toDate.IsZero() && txDate.After(toDate) {
+					continue
+				}
+				filtered = append(filtered, tx)
+			}
+			transactions = filtered
+			if len(transactions) == 0 {
+				fmt.Println("⚠️  No transactions found in the specified date range")
+				return nil
+			}
+		}
 
+		// Filter by currency if provided
+		if currency != "" {
+			var filtered []*models.Transaction
+			for _, tx := range transactions {
+				if strings.EqualFold(tx.Currency, currency) {
+					filtered = append(filtered, tx)
+				}
+			}
+			transactions = filtered
+			if len(transactions) == 0 {
+				fmt.Printf("⚠️  No transactions found in %s currency\n", currency)
+				return nil
+			}
+		}
+
+		// Show debug information if requested
+		if debug {
 			// Show first 10 emails for debugging
 			limit := 10
 			if len(allMessages) < limit {
@@ -156,9 +237,7 @@ var calculateCmd = &cobra.Command{
 				fmt.Printf("   From: %s\n", msg.From)
 				fmt.Printf("   Subject: %s\n", msg.Subject)
 				fmt.Printf("   Date: %s\n", msg.Date)
-				if debug {
-					fmt.Printf("   Body (first 200 chars): %s\n", truncateString(msg.Body, 200))
-				}
+				fmt.Printf("   Body (first 200 chars): %s\n", truncateString(msg.Body, 200))
 			}
 
 			fmt.Println("\n💡 Tip: Check the email domains and keywords. You may need to update tracker-mails.json")
@@ -202,15 +281,24 @@ func displayExpenseSummary(transactions interface{}) {
 		totalAmount := 0.0
 		byCategory := make(map[string]float64)
 		byService := make(map[string]float64)
+		currenciesSeen := make(map[string]string)
 
 		for i, tx := range t {
-			fmt.Printf("%d. %s - $%.2f %s\n", i+1, tx.ServiceName, tx.Amount, tx.Currency)
+			fmt.Printf("%d. %s - %s%.2f %s\n", i+1, tx.ServiceName, tx.CurrencySymbol, tx.Amount, tx.Currency)
 			fmt.Printf("   Category: %s | Date: %s\n", tx.Category, tx.Date.Format("2006-01-02"))
 			fmt.Printf("   Subject: %s\n", tx.Subject)
 
 			totalAmount += tx.Amount
 			byCategory[tx.Category] += tx.Amount
 			byService[tx.ServiceName] += tx.Amount
+			currenciesSeen[tx.Currency] = tx.CurrencySymbol
+		}
+
+		// Get symbol for summary (use first found)
+		summarySymbol := "$"
+		for _, sym := range currenciesSeen {
+			summarySymbol = sym
+			break
 		}
 
 		// Summary by category
@@ -218,7 +306,7 @@ func displayExpenseSummary(transactions interface{}) {
 		fmt.Println("─────────────────────────────────────────────────")
 		for category, amount := range byCategory {
 			percentage := (amount / totalAmount) * 100
-			fmt.Printf("%-20s: $%8.2f (%.1f%%)\n", category, amount, percentage)
+			fmt.Printf("%-20s: %s%8.2f (%.1f%%)\n", category, summarySymbol, amount, percentage)
 		}
 
 		// Summary by service
@@ -252,12 +340,12 @@ func displayExpenseSummary(transactions interface{}) {
 
 		for i := 0; i < limit; i++ {
 			percentage := (services[i].amount / totalAmount) * 100
-			fmt.Printf("%-20s: $%8.2f (%.1f%%)\n", services[i].service, services[i].amount, percentage)
+			fmt.Printf("%-20s: %s%8.2f (%.1f%%)\n", services[i].service, summarySymbol, services[i].amount, percentage)
 		}
 
 		// Total
 		fmt.Println("\n═══════════════════════════════════════════════════")
-		fmt.Printf("💰 TOTAL EXPENSES: $%.2f\n", totalAmount)
+		fmt.Printf("💰 TOTAL EXPENSES: %s%.2f\n", summarySymbol, totalAmount)
 		fmt.Printf("📈 Number of Transactions: %d\n", len(t))
 		if len(t) > 0 {
 			fmt.Printf("📅 Date Range: %s to %s\n",
@@ -314,7 +402,7 @@ func truncateString(s string, maxLen int) string {
 	return s[:maxLen] + "..."
 }
 
-func init() {
-	authCmd.AddCommand(loginCmd)
-	calculateCmd.Flags().BoolP("debug", "d", false, "Show debug information about unmatched emails")
+// Helper function to parse date strings (YYYY-MM-DD format)
+func parseDate(dateStr string) (time.Time, error) {
+	return time.Parse("2006-01-02", dateStr)
 }

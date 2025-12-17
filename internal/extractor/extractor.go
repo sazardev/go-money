@@ -96,25 +96,27 @@ func (te *TransactionExtractor) extractTransactionFromMessage(msg *models.Messag
 		return nil
 	}
 
-	// Extract amount
-	amount := te.extractAmount(msg.Body)
+	// Extract amount and currency
+	amount, currency, currencySymbol, rawAmount := te.extractAmountWithCurrency(msg.Body)
 	if amount <= 0 {
 		return nil
 	}
 
 	// Create transaction
 	txn := &models.Transaction{
-		ID:          msg.ID,
-		ServiceID:   service.ID,
-		ServiceName: service.Name,
-		Category:    service.Category,
-		Amount:      amount,
-		Currency:    service.PricePattern.Currency,
-		Date:        msg.Date,
-		Description: msg.Subject,
-		Email:       msg.From,
-		Subject:     msg.Subject,
-		Timestamp:   time.Now(),
+		ID:             msg.ID,
+		ServiceID:      service.ID,
+		ServiceName:    service.Name,
+		Category:       service.Category,
+		Amount:         amount,
+		Currency:       currency,
+		CurrencySymbol: currencySymbol,
+		Date:           msg.Date,
+		Description:    msg.Subject,
+		Email:          msg.From,
+		Subject:        msg.Subject,
+		Timestamp:      time.Now(),
+		RawAmount:      rawAmount,
 	}
 
 	return txn
@@ -148,7 +150,81 @@ func (te *TransactionExtractor) matchService(msg *models.Message) *Service {
 	return nil
 }
 
-// extractAmount extracts the amount from text with multiple patterns
+// extractAmountWithCurrency extracts amount AND currency from text
+func (te *TransactionExtractor) extractAmountWithCurrency(text string) (float64, string, string, string) {
+	if text == "" {
+		return 0, "USD", "$", ""
+	}
+
+	// Pattern: match currency codes and symbols with amounts
+	currencyPatterns := []struct {
+		pattern  string // regex pattern
+		currency string // currency code
+		symbol   string // currency symbol
+	}{
+		{`(\$|\$\s*)[\s]*(\d[\d,]*\.?\d{0,2})\s*(USD)?`, "USD", "$"},
+		{`(\d[\d,]*\.?\d{0,2})\s*(USD)`, "USD", "$"},
+		{`(MXN|M\$|MEX|\$\s*M)\s*(\d[\d,]*\.?\d{0,2})`, "MXN", "$"},
+		{`(\d[\d,]*\.?\d{0,2})\s*(MXN|M\$|MEX)`, "MXN", "$"},
+		{`(€)\s*(\d[\d,]*\.?\d{0,2})`, "EUR", "€"},
+		{`(\d[\d,]*\.?\d{0,2})\s*(EUR|€)`, "EUR", "€"},
+		{`(£)\s*(\d[\d,]*\.?\d{0,2})`, "GBP", "£"},
+		{`(\d[\d,]*\.?\d{0,2})\s*(GBP|£)`, "GBP", "£"},
+		{`(¥|JPY)\s*(\d[\d,]*\.?\d{0,2})`, "JPY", "¥"},
+		{`(\d[\d,]*\.?\d{0,2})\s*(JPY|¥)`, "JPY", "¥"},
+		{`(CAD|\$\s*C)\s*(\d[\d,]*\.?\d{0,2})`, "CAD", "$"},
+		{`(\d[\d,]*\.?\d{0,2})\s*(CAD)`, "CAD", "$"},
+	}
+
+	// Try each currency pattern
+	for _, cp := range currencyPatterns {
+		re := regexp.MustCompile("(?i)" + cp.pattern)
+		matches := re.FindAllStringSubmatch(text, -1)
+
+		var maxAmount float64
+		var rawAmount string
+
+		for _, match := range matches {
+			var amountStr string
+
+			// Extract the numeric part (usually second or third group depending on pattern)
+			if len(match) >= 3 {
+				// Try the last group (usually the number)
+				for i := len(match) - 1; i >= 1; i-- {
+					if match[i] != "" && !strings.ContainsAny(match[i], "$€£¥") {
+						if num, err := strconv.Atoi(strings.ReplaceAll(match[i], ",", "")); err == nil && num > 0 {
+							amountStr = match[i]
+							break
+						}
+					}
+				}
+			}
+
+			// Remove commas and parse
+			amountStr = strings.ReplaceAll(amountStr, ",", "")
+			if amount, err := strconv.ParseFloat(amountStr, 64); err == nil {
+				if amount > maxAmount && amount < 1000000 { // Sanity check
+					maxAmount = amount
+					rawAmount = match[0]
+				}
+			}
+		}
+
+		if maxAmount > 0 {
+			return maxAmount, cp.currency, cp.symbol, rawAmount
+		}
+	}
+
+	// Fallback: use extractAmount without currency detection, default to USD
+	amount := te.extractAmount(text)
+	if amount > 0 {
+		return amount, "USD", "$", ""
+	}
+
+	return 0, "USD", "$", ""
+}
+
+// extractAmount extracts the amount from text (fallback function)
 func (te *TransactionExtractor) extractAmount(text string) float64 {
 	if text == "" {
 		return 0
@@ -237,7 +313,7 @@ func (te *TransactionExtractor) extractAmount(text string) float64 {
 		for _, match := range matches {
 			match = strings.ReplaceAll(match, ",", "")
 			if amount, err := strconv.ParseFloat(match, 64); err == nil {
-				if amount > maxAmount && amount < 100000 { // Sanity check
+				if amount > maxAmount && amount < 1000000 { // Sanity check
 					maxAmount = amount
 				}
 			}
