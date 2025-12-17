@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -147,22 +148,102 @@ func (te *TransactionExtractor) matchService(msg *models.Message) *Service {
 	return nil
 }
 
-// extractAmount extracts the amount from text
+// extractAmount extracts the amount from text with multiple patterns
 func (te *TransactionExtractor) extractAmount(text string) float64 {
-	// Common patterns for amounts
-	patterns := []string{
-		`\$[\d,]+\.?\d{0,2}`,
-		`USD\s*[\d,]+\.?\d{0,2}`,
-		`Total[:\s]*\$?[\d,]+\.?\d{0,2}`,
-		`Amount[:\s]*\$?[\d,]+\.?\d{0,2}`,
+	if text == "" {
+		return 0
 	}
 
+	// Common patterns for monetary amounts
+	patterns := []string{
+		// Dollar amounts: $123.45
+		`\$\s*([\d,]+\.?\d{0,2})`,
+		// USD amounts: USD 123.45
+		`USD\s+([\d,]+\.?\d{0,2})`,
+		// Total field: Total: $123.45 or Total: 123.45
+		`(?i)total\s*:?\s*\$?\s*([\d,]+\.?\d{0,2})`,
+		// Amount field: Amount: $123.45
+		`(?i)amount\s*:?\s*\$?\s*([\d,]+\.?\d{0,2})`,
+		// Charge field: Charge: $123.45
+		`(?i)charge\s*:?\s*\$?\s*([\d,]+\.?\d{0,2})`,
+		// Price field: Price: $123.45
+		`(?i)price\s*:?\s*\$?\s*([\d,]+\.?\d{0,2})`,
+		// Generic number pattern with currency symbol
+		`[\$£€]\s*([\d,]+\.?\d{0,2})`,
+		// Generic number at end of likely currency string
+		`[\d,]+\.\d{2}\s*(USD|EUR|GBP)`,
+	}
+
+	// Try each pattern
 	for _, pattern := range patterns {
 		re := regexp.MustCompile(pattern)
-		matches := re.FindAllString(text, 1)
-		if len(matches) > 0 {
-			// TODO: Parse the amount properly
-			return 0
+		matches := re.FindAllStringSubmatch(text, -1)
+
+		// Get the largest match (in case of multiple amounts, pick the biggest one)
+		var maxAmount float64
+		for _, match := range matches {
+			if len(match) >= 2 {
+				// Extract the number group
+				amountStr := match[1]
+				// Remove commas
+				amountStr = strings.ReplaceAll(amountStr, ",", "")
+
+				if amount, err := strconv.ParseFloat(amountStr, 64); err == nil {
+					if amount > maxAmount {
+						maxAmount = amount
+					}
+				}
+			} else if len(match) >= 1 {
+				// Try parsing the whole match
+				amountStr := match[0]
+				// Remove currency symbols
+				amountStr = strings.TrimPrefix(amountStr, "$")
+				amountStr = strings.TrimPrefix(amountStr, "£")
+				amountStr = strings.TrimPrefix(amountStr, "€")
+				amountStr = strings.TrimSpace(amountStr)
+				amountStr = strings.ReplaceAll(amountStr, ",", "")
+
+				if amount, err := strconv.ParseFloat(amountStr, 64); err == nil {
+					if amount > maxAmount {
+						maxAmount = amount
+					}
+				}
+			}
+		}
+
+		if maxAmount > 0 {
+			return maxAmount
+		}
+	}
+
+	// Fallback: find any number that looks like a price
+	// Match any number with 2 decimal places
+	re := regexp.MustCompile(`\d+\.\d{2}`)
+	matches := re.FindAllString(text, -1)
+	if len(matches) > 0 {
+		// Get the last match (often amounts are listed last in receipts)
+		for i := len(matches) - 1; i >= 0; i-- {
+			if amount, err := strconv.ParseFloat(matches[i], 64); err == nil && amount > 0 {
+				return amount
+			}
+		}
+	}
+
+	// Last resort: find largest number
+	re = regexp.MustCompile(`[\d,]+\.?\d{0,2}`)
+	matches = re.FindAllString(text, -1)
+	if len(matches) > 0 {
+		var maxAmount float64
+		for _, match := range matches {
+			match = strings.ReplaceAll(match, ",", "")
+			if amount, err := strconv.ParseFloat(match, 64); err == nil {
+				if amount > maxAmount && amount < 100000 { // Sanity check
+					maxAmount = amount
+				}
+			}
+		}
+		if maxAmount > 0 {
+			return maxAmount
 		}
 	}
 
