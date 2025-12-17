@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -255,6 +257,10 @@ var calculateCmd = &cobra.Command{
 
 		displayExpenseSummary(transactions)
 
+		// Generate detailed CSV report
+		csvFile := generateTransactionCSV(transactions)
+		fmt.Printf("\n📄 CSV Report generated: %s\n", csvFile)
+
 		return nil
 	},
 }
@@ -405,4 +411,78 @@ func truncateString(s string, maxLen int) string {
 // Helper function to parse date strings (YYYY-MM-DD format)
 func parseDate(dateStr string) (time.Time, error) {
 	return time.Parse("2006-01-02", dateStr)
+}
+
+// generateTransactionCSV generates a detailed CSV report of all transactions
+func generateTransactionCSV(transactions interface{}) string {
+	txList, ok := transactions.([]*models.Transaction)
+	if !ok {
+		return ""
+	}
+
+	// Create CSV filename with timestamp
+	timestamp := time.Now().Format("2006-01-02_15-04-05")
+	filename := fmt.Sprintf("expenses_%s.csv", timestamp)
+
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Printf("Error creating CSV file: %v", err)
+		return ""
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Write header
+	headers := []string{
+		"Transaction ID",
+		"Service Name",
+		"Service ID",
+		"Category",
+		"Amount",
+		"Currency",
+		"Currency Symbol",
+		"Transaction Date",
+		"Email From",
+		"Email Subject",
+		"Email Body (first 500 chars)",
+		"Raw Amount Text",
+		"Extracted Timestamp",
+	}
+	if err := writer.Write(headers); err != nil {
+		log.Printf("Error writing header: %v", err)
+		return ""
+	}
+
+	// Write transaction rows
+	for _, tx := range txList {
+		// Truncate body to first 500 chars
+		body := tx.Description
+		if len(body) > 500 {
+			body = body[:500] + "..."
+		}
+
+		row := []string{
+			tx.ID,
+			tx.ServiceName,
+			tx.ServiceID,
+			tx.Category,
+			fmt.Sprintf("%.2f", tx.Amount),
+			tx.Currency,
+			tx.CurrencySymbol,
+			tx.Date.Format("2006-01-02 15:04:05"),
+			tx.Email,
+			tx.Subject,
+			body,
+			tx.RawAmount,
+			tx.Timestamp.Format("2006-01-02 15:04:05"),
+		}
+		if err := writer.Write(row); err != nil {
+			log.Printf("Error writing row: %v", err)
+			return ""
+		}
+	}
+
+	return filename
 }

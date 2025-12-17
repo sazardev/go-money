@@ -39,3 +39,5 @@ token.json
 # OS
 Thumbs.db
 .idea/
+
+*.csv
