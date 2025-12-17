@@ -1,0 +1,7 @@
+# GO CLI Project
+
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.test.example
